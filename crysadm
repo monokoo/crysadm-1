@@ -1,0 +1,85 @@
+#!/bin/sh
+# chkconfig: 2345 90 10
+# description: Start or stop the crysadm server
+#
+### BEGIN INIT INFO
+# Provides: crysadm
+# Required-Start: $network $syslog
+# Required-Stop: $network
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Description: Start or stop the crysadm server
+### END INIT INFO
+
+# Author: monokoo
+
+name=Crysadm
+BIN1=/opt/crysadm/crysadm/crysadm_helper.py
+conf=/opt/crysadm/crysadm_helper_uwsgi.ini
+
+
+start(){
+    /usr/local/bin/python3.4 $BIN1 >> /var/log/uwsgi/crysadm_uwsgi.log 2>&1 &
+    /usr/local/bin/uwsgi --ini $conf >> /var/log/uwsgi/crysadm_uwsgi.log 2>&1 &
+    RETVAL=$?
+    if [ "$RETVAL" = "0" ]; then
+        echo "$name start success"
+    else
+        echo "$name start failed"
+    fi
+}
+
+stop(){
+    pid=`ps -ef | grep -v grep | grep -v ps | grep -i "crysadm_helper" | awk '{print $2}'|wc -l`
+    if [ $pid != 0 ]; then
+        ps -ef |grep -E 'crysadm_helper'|grep -v grep|awk '{print $2}'|xargs kill -9
+        RETVAL=$?
+        if [ "$RETVAL" = "0" ]; then
+            echo "$name stop success"
+        else
+            echo "$name stop failed"
+        fi
+    else
+        echo "$name is not running"
+        RETVAL=1
+    fi
+}
+
+status(){
+    pid=`ps -ef | grep -v grep | grep -v ps | grep -i "crysadm_helper" | awk '{print $2}'|wc -l`
+    if [ $pid = 0 ]; then
+        echo "*********************"
+        echo "$name is not running"
+        echo "*********************"
+        tail -f /var/log/uwsgi/crysadm_uwsgi.log
+        RETVAL=1
+    else
+        echo "******************************"
+        echo "$name is running with $pid processes"
+        echo "******************************"
+        tail -f /var/log/uwsgi/crysadm_uwsgi.log
+        RETVAL=0
+    fi
+}
+
+case "$1" in
+'start')
+    start
+    ;;
+'stop')
+    stop
+    ;;
+'status')
+    status
+    ;;
+'restart')
+    stop
+    start
+    RETVAL=$?
+    ;;
+*)
+    echo "Usage: $0 { start | stop | restart | status }"
+    RETVAL=1
+    ;;
+esac
+exit $RETVAL

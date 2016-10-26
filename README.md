@@ -3,32 +3,53 @@
 
 如果没有重大bug，此版本将不再更新。如果你发现bug，或者有新的功能，可以提交pull request。
 
+
+
+##一键脚本用法
+进入系统后先升级源，输入命令<br>
+`yum update` <br>
+等一会自动下载，输入命令 <br>
+`yum install -y git` <br>
+用 `cd` 命令进入/opt目录，输入命令<br>
+`cd /opt`
+`mkdir /opt/crysadm`
+`git clone https://github.com/monokoo/crysadm-1.git`
+`mv crysadm-1 crysadm`<br>
+等待下载完成，输入命令,配置python3.4环境<br>
+`cd crysadm  &&  sh install_python3.sh`<br>
+配置完成之后重启服务器生效<br>
+`reboot`<br>
+进入系统执行setup.sh脚本<br>
+`cd crysadm  && sh setup.sh`<br>
+此时等待安装，完成后会自动启动云监工。<br>
+***
+##PS:<br>
+***
+install_python3.sh是配置python3.4脚本，，setup.sh是安装环境脚本。<br>
+如果同步最新代码更新执行以下命令:<br>
+git pull <br>
+service crysadm restart <br>
+***
+***
+
+#以下为手动配置方法
 # 云监工配置Nginx、uWSGI
 
 ## 安装Nginx和uWSGI
 
 ```bash
-sudo apt-get install nginx
-sudo python3.4 -m pip install uwsgi
+yum install nginx -y
+pip install uwsgi
 ```
 
 ##配置Nginx
-创建云监工存放目录/var/www/crysadm
+创建云监工存放目录/opt/crysadm
 ```bash
-sudo mkdir /var/www
-sudo mkdir /var/www/crysadm
+mkdir /opt/crysadm
 ```
-由于是用root创建的，在这里需要修改目录权限。我用的是树莓派，所以需要改成pi:pi
-```bash
-sudo chown -R pi:pi /var/www/crysadm
-```
-首先删除Nginx默认的配置文件
-```bash
-sudo rm /etc/nginx/sites-enabled/default
-```
-配置文件已上传
 
-创建云监工使用的配置文件/var/www/crysadm/crysadm_nginx.conf
+配置文件已包含在git源码内
+创建云监工使用的配置文件/opt/crysadm/crysadm_nginx.conf
 ```shell
 server {
     listen      4000;
@@ -39,21 +60,21 @@ server {
     location / { try_files $uri @yourapplication; }
     location @yourapplication {
         include uwsgi_params;
-        uwsgi_pass unix:/var/www/crysadm/crysadm_uwsgi.sock;
+        uwsgi_pass unix:/opt/crysadm/crysadm_uwsgi.sock;
     }
 }
 ```
 将配置文件符号链接到Nginx配置文件目录，重启Nginx
 ```bash
-sudo ln -s /var/www/crysadm/crysadm_nginx.conf /etc/nginx/conf.d/
-sudo /etc/init.d/nginx restart
+ln -s /opt/crysadm/crysadm_nginx.conf /etc/nginx/conf.d/
+service nginx restart
 ```
 ##配置uWSGI
-创建一个新的uWSGI配置文件/var/www/crysadm/crysadm_uwsgi.ini
+创建一个新的uWSGI配置文件/opt/crysadm/crysadm_helper_uwsgi.ini
 ```bash
 [uwsgi]
 #application's base folder
-base = /var/www/crysadm
+base = /opt/crysadm
 
 #python module to import
 app = crysadm
@@ -63,7 +84,7 @@ module = %(app)
 pythonpath = %(base)
 
 #socket file's location
-socket = /var/www/crysadm/%n.sock
+socket = /opt/crysadm/%n.sock
 
 #permissions for the socket file
 chmod-socket    = 666
@@ -74,26 +95,26 @@ callable = app
 #location of log files
 logto = /var/log/uwsgi/%n.log
 ```
-创建uWSGI存放log目录，并修改权限
+创建uWSGI存放log目录
 ```bash
-sudo mkdir -p /var/log/uwsgi
-sudo chown -R pi:pi /var/log/uwsgi
+mkdir -p /var/log/uwsgi
 ```
 ##克隆云监工代码
 ```bash
-cd /var/www/
-git clone https://github.com/HuiMi24/crysadm.git
+cd /opt/
+git clone https://github.com/monokoo/crysadm-1.git
+mv crysadm-1 crysadm
 ```
 如果你是第一次部署，首先要启动redis-server
 ```bash
-sudo /etc/init.d/redis-server start
+service redis start
 ```
 运行云监工
 ```bash
-sudo /var/www/crysadm/run.sh
+./opt/crysadm/run.sh
 ```
 
 可以通过浏览器访问云监工了，默认的使用的端口是4000
 
-访问127.0.0.1:4000/install 生成管理员账号密码，只有一次机会。如果忘了，把数据库数据删除重新加载这个页面。
+访问服务器IP:4000/install 生成管理员账号密码，只有一次机会。如果忘了，把数据库数据删除重新加载这个页面。
 
