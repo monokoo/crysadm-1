@@ -85,7 +85,7 @@ module = %(app)
 pythonpath = %(base)
 
 #socket file's location
-socket = /opt/crysadm/%n.sock
+socket = /opt/crysadm/crysadm_uwsgi.sock
 
 #permissions for the socket file
 chmod-socket    = 666
@@ -94,7 +94,7 @@ chmod-socket    = 666
 callable = app
 
 #location of log files
-logto = /var/log/uwsgi/%n.log
+logto = /var/log/uwsgi/crysadm_uwsgi.log
 ```
 创建uWSGI存放log目录
 ```bash
