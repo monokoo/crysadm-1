@@ -22,6 +22,7 @@
 进入系统执行setup.sh脚本<br>
 `cd crysadm  && sh setup.sh`<br>
 此时等待安装，完成后会自动启动云监工。<br>
+请务必修改/opt/crysadm/config.py 文件secret_key的默认值。<br>
 ***
 ##PS:<br>
 ***

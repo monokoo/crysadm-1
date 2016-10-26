@@ -26,10 +26,10 @@ ln -s /opt/crysadm/crysadm_nginx.conf /etc/nginx/conf.d/
 service nginx restart
 
 #使用随机生成的secret_key替换默认的key
-python3.4 gen_random_secret_key.py > secret
-secret_key=$(cat secret|awk 'NR==2 {print}')
-sed -i "s/SECRET_KEY = 'sw7dWI8l-9Tw0-rcn1-vdYM-zVWoAox5q4Il'/SECRET_KEY = '${secret_key}'/" /opt/crysadm/config.py
-rm -f secret
+#python3.4 gen_random_secret_key.py > secret
+#secret_key=$(cat secret|awk 'NR==2 {print}')
+#sed -i "s/SECRET_KEY = 'sw7dWI8l-9Tw0-rcn1-vdYM-zVWoAox5q4Il'/SECRET_KEY = '${secret_key}'/" /opt/crysadm/config.py
+#rm -f secret
 
 #复制开机启动脚本
 cp /opt/crysadm/crysadm /etc/init.d/crysadm

@@ -14,7 +14,7 @@
 # Author: monokoo
 
 name=Crysadm
-BIN1=/opt/crysadm/crysadm/crysadm_helper.py
+BIN1=/opt/crysadm/crysadm_helper.py
 conf=/opt/crysadm/crysadm_helper_uwsgi.ini
 
 
