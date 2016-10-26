@@ -11,9 +11,9 @@
 等一会自动下载，输入命令 <br>
 `yum install -y git` <br>
 用 `cd` 命令进入/opt目录，输入命令<br>
-`cd /opt`
-`mkdir /opt/crysadm`
-`git clone https://github.com/monokoo/crysadm-1.git`
+`cd /opt`<br>
+`mkdir /opt/crysadm`<br>
+`git clone https://github.com/monokoo/crysadm-1.git`<br>
 `mv crysadm-1 crysadm`<br>
 等待下载完成，输入命令,配置python3.4环境<br>
 `cd crysadm  &&  sh install_python3.sh`<br>
